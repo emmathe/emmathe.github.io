@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="记录">
+  <meta name="description" content="Hive内部表  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop 12345678create TABLE person(       key string,       name string,       sex string)STORED BY &apos;org.apache.hadoop.hive.hbase.HBaseStorageH">
 <meta property="og:type" content="article">
-<meta property="og:title" content="amy acker blog">
+<meta property="og:title" content="Hbase 映射 Hive">
 <meta property="og:url" content="http://yoursite.com/2019/12/30/Hbase-映射-Hive/index.html">
 <meta property="og:site_name" content="amy acker blog">
-<meta property="og:description" content="记录">
+<meta property="og:description" content="Hive内部表  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop 12345678create TABLE person(       key string,       name string,       sex string)STORED BY &apos;org.apache.hadoop.hive.hbase.HBaseStorageH">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-05T05:45:50.289Z">
+<meta property="og:updated_time" content="2020-01-05T05:45:50.291Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="amy acker blog">
-<meta name="twitter:description" content="记录">
+<meta name="twitter:title" content="Hbase 映射 Hive">
+<meta name="twitter:description" content="Hive内部表  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop 12345678create TABLE person(       key string,       name string,       sex string)STORED BY &apos;org.apache.hadoop.hive.hbase.HBaseStorageH">
 
 
 
@@ -122,7 +122,7 @@
   };
 </script>
 
-  <title> | amy acker blog</title>
+  <title>Hbase 映射 Hive | amy acker blog</title>
   
 
 
@@ -338,7 +338,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">Hbase 映射 Hive
 
               
             
@@ -387,6 +387,24 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a></span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -415,7 +433,16 @@
       
 
       
-        
+        <ul>
+<li><p>Hive内部表<br>  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create TABLE person(</span><br><span class="line">       key string,</span><br><span class="line">       name string,</span><br><span class="line">       sex string</span><br><span class="line">)</span><br><span class="line">STORED BY <span class="string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>   </span><br><span class="line">WITH SERDEPROPERTIES (<span class="string">"hbase.columns.mapping"</span> =<span class="string">":key,cf1:name,cf1:sex"</span>)   </span><br><span class="line">TBLPROPERTIES(<span class="string">"hbase.table.name"</span> = <span class="string">"hbase_person"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Hive外部表<br> 被external关键字修饰，数据由HDFS管理，hive drop掉表，hbase表不会影响</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create EXTERNAL TABLE person(</span><br><span class="line">       key string,</span><br><span class="line">       name string,</span><br><span class="line">       sex string</span><br><span class="line">)</span><br><span class="line">STORED BY <span class="string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>   </span><br><span class="line">WITH SERDEPROPERTIES (<span class="string">"hbase.columns.mapping"</span> =<span class="string">":key,cf1:name,cf1:sex"</span>)   </span><br><span class="line">TBLPROPERTIES(<span class="string">"hbase.table.name"</span> = <span class="string">"hbase_person"</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
       
     </div>
 

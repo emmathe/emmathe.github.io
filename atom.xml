@@ -68,15 +68,26 @@
   </entry>
   
   <entry>
-    <title></title>
+    <title>Hbase 映射 Hive</title>
     <link href="http://yoursite.com/2019/12/30/Hbase-%E6%98%A0%E5%B0%84-Hive/"/>
     <id>http://yoursite.com/2019/12/30/Hbase-映射-Hive/</id>
-    <published>2019-12-30T13:50:30.338Z</published>
-    <updated>2020-01-05T05:45:50.289Z</updated>
+    <published>2019-12-30T13:50:30.000Z</published>
+    <updated>2020-01-05T05:45:50.291Z</updated>
+    
+    <content type="html"><![CDATA[<ul><li><p>Hive内部表<br>  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create TABLE person(</span><br><span class="line">       key string,</span><br><span class="line">       name string,</span><br><span class="line">       sex string</span><br><span class="line">)</span><br><span class="line">STORED BY <span class="string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>   </span><br><span class="line">WITH SERDEPROPERTIES (<span class="string">"hbase.columns.mapping"</span> =<span class="string">":key,cf1:name,cf1:sex"</span>)   </span><br><span class="line">TBLPROPERTIES(<span class="string">"hbase.table.name"</span> = <span class="string">"hbase_person"</span>);</span><br></pre></td></tr></table></figure></li><li><p>Hive外部表<br> 被external关键字修饰，数据由HDFS管理，hive drop掉表，hbase表不会影响</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">create EXTERNAL TABLE person(</span><br><span class="line">       key string,</span><br><span class="line">       name string,</span><br><span class="line">       sex string</span><br><span class="line">)</span><br><span class="line">STORED BY <span class="string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span>   </span><br><span class="line">WITH SERDEPROPERTIES (<span class="string">"hbase.columns.mapping"</span> =<span class="string">":key,cf1:name,cf1:sex"</span>)   </span><br><span class="line">TBLPROPERTIES(<span class="string">"hbase.table.name"</span> = <span class="string">"hbase_person"</span>);</span><br></pre></td></tr></table></figure></li></ul>]]></content>
     
     <summary type="html">
     
+      
+      
+        &lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Hive内部表&lt;br&gt;  没被external关键字修饰，数据由Hive自身管理，hive drop掉此表时，hbase也被drop&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class
+      
+    
     </summary>
+    
+      <category term="大数据" scheme="http://yoursite.com/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
     
   </entry>
