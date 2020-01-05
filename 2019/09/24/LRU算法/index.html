@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="简介 LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高 利用LinkedHashMap实现 1.利用LinkedHashMap中的构造方法 要完成LRU, accessOrder必须为true 123456public LinkedHashMap(int initialCap">
+  <meta name="description" content="前言最近在学习Redis，其中用了淘汰算法，特学习下 LRU介绍LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LRU算法">
-<meta property="og:url" content="http://yoursite.com/2019/12/30/LRU算法/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/09/24/LRU算法/index.html">
 <meta property="og:site_name" content="amy acker blog">
-<meta property="og:description" content="简介 LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高 利用LinkedHashMap实现 1.利用LinkedHashMap中的构造方法 要完成LRU, accessOrder必须为true 123456public LinkedHashMap(int initialCap">
+<meta property="og:description" content="前言最近在学习Redis，其中用了淘汰算法，特学习下 LRU介绍LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-30T13:59:39.984Z">
+<meta property="og:updated_time" content="2020-01-05T06:24:02.624Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LRU算法">
-<meta name="twitter:description" content="简介 LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高 利用LinkedHashMap实现 1.利用LinkedHashMap中的构造方法 要完成LRU, accessOrder必须为true 123456public LinkedHashMap(int initialCap">
+<meta name="twitter:description" content="前言最近在学习Redis，其中用了淘汰算法，特学习下 LRU介绍LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。 核心：如果数据最近被访问过，那么将来访问的几率也更高">
 
 
 
@@ -112,7 +112,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2019/12/30/LRU算法/">
+  <link rel="canonical" href="http://yoursite.com/2019/09/24/LRU算法/">
 
 
 
@@ -272,6 +272,23 @@
     <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
 
       
       
@@ -321,7 +338,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/30/LRU算法/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/24/LRU算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="amy acker">
@@ -364,12 +381,24 @@
                 
               
 
-              <time title="创建时间：2019-12-30 21:55:36 / 修改时间：21:59:39" itemprop="dateCreated datePublished" datetime="2019-12-30T21:55:36+08:00">2019-12-30</time>
+              <time title="创建时间：2019-09-24 21:55:36" itemprop="dateCreated datePublished" datetime="2019-09-24T21:55:36+08:00">2019-09-24</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-01-05 14:24:02" itemprop="dateModified" datetime="2020-01-05T14:24:02+08:00">2020-01-05</time>
               
             
           </span>
@@ -421,9 +450,10 @@
       
 
       
-        <p><strong>简介</strong></p>
-<p>LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在学习Redis，其中用了淘汰算法，特学习下</p>
+<h2 id="LRU介绍"><a href="#LRU介绍" class="headerlink" title="LRU介绍"></a>LRU介绍</h2><p>LRU是Least Recently Used的缩写，即最近最少使用，常用于页面置换算法，是为虚拟页式存储管理服务的。</p>
 <p>核心：如果数据最近被访问过，那么将来访问的几率也更高</p>
+<a id="more"></a>
 <p><strong>利用LinkedHashMap实现</strong></p>
 <p>1.利用LinkedHashMap中的构造方法</p>
 <p>要完成LRU, accessOrder必须为true</p>
@@ -475,7 +505,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/12/30/Hbase-映射-Hive/" rel="next" title="Hbase 映射 Hive">
+              <a href="/2019/06/30/Hbase-映射-Hive/" rel="next" title="Hbase 映射 Hive">
                 <i class="fa fa-chevron-left"></i> Hbase 映射 Hive
               </a>
             
@@ -531,8 +561,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -616,6 +655,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LRU介绍"><span class="nav-number">1.1.</span> <span class="nav-text">LRU介绍</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       

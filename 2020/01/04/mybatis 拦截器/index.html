@@ -94,17 +94,17 @@
 
 
 
-  <meta name="description" content="首先自定义拦截器要实现Interceptor接口 先来个简单的一个例子 12345678910111213141516171819202122232425/** * @Intercepts 表明这个是个拦截器 * @Signature 表明要拦截的类，类里面的方法，方法里的参数 * 这里要拦截的是Executor，Executor里面的update方法，方法的参数 */@Intercepts(@S">
+  <meta name="description" content="前言最近在学习MyBatis，学习到拦截器这块，并记录下来 拦截器介绍在某些业务场景下我们需要对sql进行拦截，达到不入侵原有代码下进行修改等操作，比如：分页，SQL执行时间，性能监控，数据过滤等等，在这里我们就可以用到Mybatis的Interceptor">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mybatis 拦截器">
 <meta property="og:url" content="http://yoursite.com/2020/01/04/mybatis 拦截器/index.html">
 <meta property="og:site_name" content="amy acker blog">
-<meta property="og:description" content="首先自定义拦截器要实现Interceptor接口 先来个简单的一个例子 12345678910111213141516171819202122232425/** * @Intercepts 表明这个是个拦截器 * @Signature 表明要拦截的类，类里面的方法，方法里的参数 * 这里要拦截的是Executor，Executor里面的update方法，方法的参数 */@Intercepts(@S">
+<meta property="og:description" content="前言最近在学习MyBatis，学习到拦截器这块，并记录下来 拦截器介绍在某些业务场景下我们需要对sql进行拦截，达到不入侵原有代码下进行修改等操作，比如：分页，SQL执行时间，性能监控，数据过滤等等，在这里我们就可以用到Mybatis的Interceptor">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-05T05:56:45.462Z">
+<meta property="og:updated_time" content="2020-01-05T06:16:22.140Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mybatis 拦截器">
-<meta name="twitter:description" content="首先自定义拦截器要实现Interceptor接口 先来个简单的一个例子 12345678910111213141516171819202122232425/** * @Intercepts 表明这个是个拦截器 * @Signature 表明要拦截的类，类里面的方法，方法里的参数 * 这里要拦截的是Executor，Executor里面的update方法，方法的参数 */@Intercepts(@S">
+<meta name="twitter:description" content="前言最近在学习MyBatis，学习到拦截器这块，并记录下来 拦截器介绍在某些业务场景下我们需要对sql进行拦截，达到不入侵原有代码下进行修改等操作，比如：分页，SQL执行时间，性能监控，数据过滤等等，在这里我们就可以用到Mybatis的Interceptor">
 
 
 
@@ -272,6 +272,23 @@
     <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
 
       
       
@@ -381,7 +398,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-01-05 13:56:45" itemprop="dateModified" datetime="2020-01-05T13:56:45+08:00">2020-01-05</time>
+                <time title="修改时间：2020-01-05 14:16:22" itemprop="dateModified" datetime="2020-01-05T14:16:22+08:00">2020-01-05</time>
               
             
           </span>
@@ -433,7 +450,10 @@
       
 
       
-        <p>首先自定义拦截器要实现Interceptor接口</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在学习MyBatis，学习到拦截器这块，并记录下来</p>
+<h2 id="拦截器介绍"><a href="#拦截器介绍" class="headerlink" title="拦截器介绍"></a>拦截器介绍</h2><p>在某些业务场景下我们需要对sql进行拦截，达到不入侵原有代码下进行修改等操作，比如：分页，SQL执行时间，性能监控，数据过滤等等，在这里我们就可以用到Mybatis的Interceptor</p>
+<a id="more"></a>
+<p>首先自定义拦截器要实现Interceptor接口</p>
 <p>先来个简单的一个例子</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Intercepts</span> 表明这个是个拦截器</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Signature</span> 表明要拦截的类，类里面的方法，方法里的参数</span></span><br><span class="line"><span class="comment"> * 这里要拦截的是Executor，Executor里面的update方法，方法的参数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Intercepts</span>(<span class="meta">@Signature</span>(type = Executor.class, method = <span class="string">"update"</span> ,args = &#123;MappedStatement.class, Object.class&#125;))</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SqlInterceptor</span> <span class="keyword">implements</span> <span class="title">Interceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Invocation invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">// 业务逻辑....</span></span><br><span class="line">        <span class="comment">// 推进责任链前进，调用下一个拦截器拦截的方法</span></span><br><span class="line">        <span class="keyword">return</span> invocation.proceed();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">plugin</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Plugin.wrap(target, <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setProperties</span><span class="params">(Properties properties)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -482,7 +502,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/12/30/LRU算法/" rel="next" title="LRU算法">
+              <a href="/2019/09/24/LRU算法/" rel="next" title="LRU算法">
                 <i class="fa fa-chevron-left"></i> LRU算法
               </a>
             
@@ -534,8 +554,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -619,6 +648,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拦截器介绍"><span class="nav-number">1.1.</span> <span class="nav-text">拦截器介绍</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
