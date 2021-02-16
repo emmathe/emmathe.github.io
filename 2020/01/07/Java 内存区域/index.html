@@ -94,18 +94,20 @@
 
 
 
-  <meta name="description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。">
+  <meta name="description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。 Java虚拟机运行时数据区">
 <meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java 内存区域">
 <meta property="og:url" content="http://yoursite.com/2020/01/07/Java 内存区域/index.html">
 <meta property="og:site_name" content="amy acker blog">
-<meta property="og:description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。">
+<meta property="og:description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。 Java虚拟机运行时数据区">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-13T13:35:12.978Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210217015038278.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:updated_time" content="2021-02-16T17:52:35.525Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 内存区域">
-<meta name="twitter:description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。">
+<meta name="twitter:description" content="前言Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。 Java虚拟机运行时数据区">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210217015038278.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 
 
 
@@ -399,7 +401,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-01-13 21:35:12" itemprop="dateModified" datetime="2020-01-13T21:35:12+08:00">2020-01-13</time>
+                <time title="修改时间：2021-02-17 01:52:35" itemprop="dateModified" datetime="2021-02-17T01:52:35+08:00">2021-02-17</time>
               
             
           </span>
@@ -452,6 +454,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Java虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域，根据《Java虚拟机规范》的规定，Java虚拟机所管理的内存将包括以下几个运行时数据区域。</p>
+<p><strong>Java虚拟机运行时数据区</strong><br><img src="https://img-blog.csdnimg.cn/20210217015038278.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
 <a id="more"></a>
 
 <h2 id="1丶程序计数器"><a href="#1丶程序计数器" class="headerlink" title="1丶程序计数器"></a>1丶程序计数器</h2><p>程序计数器是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。在虚拟机的概念模型里，字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支丶循环丶跳转丶异常处理丶线程恢复等基础功能都需要依赖计数器来完成。</p>
@@ -724,7 +727,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
