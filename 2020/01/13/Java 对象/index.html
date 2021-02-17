@@ -102,13 +102,15 @@
 <meta property="og:site_name" content="amy acker blog">
 <meta property="og:description" content="前言Java对象的探秘">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210218005123591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021021800514977.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210217021406842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210217021521209.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-02-16T18:18:50.932Z">
+<meta property="og:updated_time" content="2021-02-17T17:18:52.339Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 对象">
 <meta name="twitter:description" content="前言Java对象的探秘">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210217021406842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210218005123591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 
 
 
@@ -402,7 +404,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-02-17 02:18:50" itemprop="dateModified" datetime="2021-02-17T02:18:50+08:00">2021-02-17</time>
+                <time title="修改时间：2021-02-18 01:18:52" itemprop="dateModified" datetime="2021-02-18T01:18:52+08:00">2021-02-18</time>
               
             
           </span>
@@ -457,17 +459,50 @@
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Java对象的探秘</p>
 <a id="more"></a>
 
-<h2 id="1丶对象的创建"><a href="#1丶对象的创建" class="headerlink" title="1丶对象的创建"></a>1丶对象的创建</h2><p>当虚拟机遇到一个new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载丶解析和初始化过。如果没有，那么必须先执行相应的类加载过程。</p>
+<h2 id="1丶对象的创建"><a href="#1丶对象的创建" class="headerlink" title="1丶对象的创建"></a>1丶对象的创建</h2><p>当虚拟机遇到一个new指令时，首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并且检查这个符号引用代表的类是否已被加载，解析和初始化过。如果没有，那么必须先执行相应的类加载过程。</p>
 <p>在类加载检查通过后，接下来虚拟机将为新生对象分配内存。对象所需内存的大小在类加载完成后便可完全确定，为对象分配空间的任务等同于把一块确定大小的内存从Java堆中划分出来。假设Java堆中内存是绝对规整的，所有用过的内存都放一边，空闲的内存放别外一边，中间放着一个指针作为分界点的指示器，那所分配的内存就仅仅是把指针向空闲空间那边挪动一段对对象大小相等的距离，这个分配方式称为“指针碰撞”。如果Java堆中的内存不是规整的，已使用内存与空闲内存相互交错，那就没办法进行指针碰撞了，虚拟机就必须维护一个列表，记录上哪些内存块是可用的，在分配的时候从列表中找到一块足够大的空间划分给对象实例，，并更新列表上的记录，这种分配方式称为“空闲列表”。选择哪种分配方式是由Java堆是否规整决定的，而Java堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定的。</p>
 <p>在并发情况且不是线程安全的的情况下，可能出现出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用原来的指针来分配内存。解决这个问题有两种方案，一种是对分配内存空间的动作进行同步处理——实际上虚拟机采用CAS配上失败重试的方式保证更新操作的原子性；别一种是把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一小块内存，称为本地线程分配缓冲（TLAB）。哪个线程要分配内存，就在哪个线程的TLAB上分配，只有TLAB用完并分配新的TLAB时，才需要同步锁定。</p>
 <p>分配内存完成后，虚拟机想要哦将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
 <p>接下来，虚拟机要对对象进行必要的设置，例如这个对象是哪个类的实例丶如何才能找到类的元数据信息丶对象的哈希码丶对象的GC分代年龄等信息。这些信息存在对象的对象头之中。</p>
 <p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从Java程序的视角来看，对象创建才刚刚开始——<init>方法还没执行，所有的字段都还为零。所以一般来说执行new指令之后会接着执行<init>方法，这样一个真正可用的对象才算完成产生出来。</init></init></p>
 <h2 id="2丶对象的内存布局"><a href="#2丶对象的内存布局" class="headerlink" title="2丶对象的内存布局"></a>2丶对象的内存布局</h2><p>在HotSpot虚拟机中，对象在内存中存储的布局可以分为3块区域：对象头丶实例数据丶对齐填充。</p>
-<p>对象头包括两部分信息，第一部分用于存储对象自身的运行是数据，如哈希码丶GC分代年龄丶锁状态标志丶线程持有的锁丶偏向线程ID丶偏向时间戳等，这部分数据的长度在32位和64位的虚拟机（未开启压缩指针）中分别为32bit和64bit，官方称它为“Mark Word”。对象需要存储的运行时数据很多，其实已经超出了32位丶64位Bitmap结构所能记录的限度，但是对象头信息是与对象自身定义的数据无关的额外存储成本，考虑到虚拟机的空间效率，Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的信息，它会根据对象的状态复用自己的存储空间。</p>
-<p>对象头的另外一部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。如果对象是一个Java数组，那在对象头中还必须有一块用于记录数组长度的数据，因为虚拟机可以通过普通Java对象的元数据信息确定Java对象的大小，但是从数组的元数据中却无法确定数组的大小。</p>
-<p>接下来的实例数据部分是对象真正存储的有效信息，也是程序代码中所定义的各种类型的字段内容。无论是从父类继承下来的，还是子类中定义的，都需要记录到实例数据中。这部分的存储顺序会受到虚拟机分配策略参数和字段在Java源码中定义顺序的影响。</p>
-<p>第三部分对齐填充并不是必然存在的，它仅仅起着占位符的作用，由于HotSpot VM的自动内存管理系统要求对象起始地址必须是8字节的整数倍，也就是对象的大小必须是8字节的整数倍。而对象头部分正好是8字节的倍数，因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>非数组对象的对象头包括两部分信息：Mark Word，类型指针。数组对象的对象头还必须要有一块用于记录数组长度的数据。</p>
+<table>
+<thead>
+<tr>
+<th>长度</th>
+<th>内容</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>32bit/64bit</td>
+<td>Mark Word</td>
+<td>哈希码丶GC分代年龄丶锁状态标志等</td>
+</tr>
+<tr>
+<td>32bit/64bit</td>
+<td>类型指针</td>
+<td>即对象指向它的类元数据的指针</td>
+</tr>
+<tr>
+<td>32bit/32bit</td>
+<td>数组长度</td>
+<td>记录数组的长度</td>
+</tr>
+</tbody></table>
+<h4 id="1丶Mark-Word"><a href="#1丶Mark-Word" class="headerlink" title="1丶Mark Word"></a>1丶Mark Word</h4><p>对象头包括两部分信息，第一部分用于存储对象自身的运行是数据，如哈希码丶GC分代年龄丶锁状态标志丶线程持有的锁丶偏向线程ID丶偏向时间戳等，这部分数据的长度在32位和64位的虚拟机（未开启压缩指针）中分别为32bit和64bit，官方称它为“Mark Word”。对象需要存储的运行时数据很多，其实已经超出了32位丶64位Bitmap结构所能记录的限度，但是对象头信息是与对象自身定义的数据无关的额外存储成本，考虑到虚拟机的空间效率，Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的信息，它会根据对象的状态复用自己的存储空间。</p>
+<p><strong>32位虚拟机</strong><br>markOop.hpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">32 bits:</span><br><span class="line">//  --------</span><br><span class="line">//             hash:25 ------------&gt;| age:4    biased_lock:1 lock:2 (normal object)</span><br><span class="line">//             JavaThread*:23 epoch:2 age:4    biased_lock:1 lock:2 (biased object)</span><br><span class="line">//             size:32 ------------------------------------------&gt;| (CMS free block)</span><br><span class="line">//             PromotedObject*:29 ----------&gt;| promo_bits:3 -----&gt;| (CMS promoted object)</span><br></pre></td></tr></table></figure>
+
+<p>在运行期间，随着锁标志位的变化，Mark Word可以变化成以下几种类型的数据：<br><img src="https://img-blog.csdnimg.cn/20210218005123591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="32位虚拟机"><br><strong>64位虚拟机</strong><br>markOop.hpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//  64 bits:</span><br><span class="line">//  --------</span><br><span class="line">//  unused:25 hash:31 --&gt;| unused:1   age:4    biased_lock:1 lock:2 (normal object)</span><br><span class="line">//  JavaThread*:54 epoch:2 unused:1   age:4    biased_lock:1 lock:2 (biased object)</span><br><span class="line">//  PromotedObject*:61 ---------------------&gt;| promo_bits:3 -----&gt;| (CMS promoted object)</span><br><span class="line">//  size:64 -----------------------------------------------------&gt;| (CMS free block)</span><br></pre></td></tr></table></figure>
+
+<p>在运行期间，随着锁标志位的变化，Mark Word可以变化成以下几种类型的数据：<br><img src="https://img-blog.csdnimg.cn/2021021800514977.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="64位虚拟机"></p>
+<h4 id="2丶类型指针"><a href="#2丶类型指针" class="headerlink" title="2丶类型指针"></a>2丶类型指针</h4><p>对象头的另外一部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
+<h4 id="3丶数组长度"><a href="#3丶数组长度" class="headerlink" title="3丶数组长度"></a>3丶数组长度</h4><p>如果对象是一个Java数组，那在对象头中还必须有一块用于记录数组长度的数据，因为虚拟机可以通过普通Java对象的元数据信息确定Java对象的大小，但是从数组的元数据中却无法确定数组的大小。</p>
+<h3 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h3><p>接下来的实例数据部分是对象真正存储的有效信息，也是程序代码中所定义的各种类型的字段内容。无论是从父类继承下来的，还是子类中定义的，都需要记录到实例数据中。这部分的存储顺序会受到虚拟机分配策略参数和字段在Java源码中定义顺序的影响。</p>
+<h3 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h3><p>第三部分对齐填充并不是必然存在的，它仅仅起着占位符的作用，由于HotSpot VM的自动内存管理系统要求对象起始地址必须是8字节的整数倍，也就是对象的大小必须是8字节的整数倍。而对象头部分正好是8字节的倍数，因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
 <h2 id="3丶对象的访问定位"><a href="#3丶对象的访问定位" class="headerlink" title="3丶对象的访问定位"></a>3丶对象的访问定位</h2><p>建立对象是为了使用对象，Java程序需要通过栈上的reference数据来操作堆上的具体对象。</p>
 <p>由于reference类型在Java虚拟机规范中只规定了一个指向对象的引用，并没有定义这个引用应该通过何种方式去定位丶访问堆中的对象的具体位置，所以对象访问方式取决于虚拟机实现而定的。目前主流的访问方式有使用句柄和直接指针两种。</p>
 <h3 id="句柄方式："><a href="#句柄方式：" class="headerlink" title="句柄方式："></a>句柄方式：</h3><p>Java堆中将会划分出一块来作为句柄池，reference中存储的就是对象的句柄地址，而句柄中包含了对象的实例数据与类型数据各自的具体地址。</p>
@@ -708,7 +743,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1丶对象的创建"><span class="nav-number">1.1.</span> <span class="nav-text">1丶对象的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2丶对象的内存布局"><span class="nav-number">1.2.</span> <span class="nav-text">2丶对象的内存布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3丶对象的访问定位"><span class="nav-number">1.3.</span> <span class="nav-text">3丶对象的访问定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#句柄方式："><span class="nav-number">1.3.1.</span> <span class="nav-text">句柄方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#直接指针方式："><span class="nav-number">1.3.2.</span> <span class="nav-text">直接指针方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优势："><span class="nav-number">1.3.3.</span> <span class="nav-text">优势：</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1丶对象的创建"><span class="nav-number">1.1.</span> <span class="nav-text">1丶对象的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2丶对象的内存布局"><span class="nav-number">1.2.</span> <span class="nav-text">2丶对象的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象头"><span class="nav-number">1.2.1.</span> <span class="nav-text">对象头</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1丶Mark-Word"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">1丶Mark Word</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2丶类型指针"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">2丶类型指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3丶数组长度"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">3丶数组长度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例数据"><span class="nav-number">1.2.2.</span> <span class="nav-text">实例数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对齐填充"><span class="nav-number">1.2.3.</span> <span class="nav-text">对齐填充</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3丶对象的访问定位"><span class="nav-number">1.3.</span> <span class="nav-text">3丶对象的访问定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#句柄方式："><span class="nav-number">1.3.1.</span> <span class="nav-text">句柄方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#直接指针方式："><span class="nav-number">1.3.2.</span> <span class="nav-text">直接指针方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优势："><span class="nav-number">1.3.3.</span> <span class="nav-text">优势：</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
