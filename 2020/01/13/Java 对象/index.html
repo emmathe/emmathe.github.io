@@ -106,7 +106,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2021021800514977.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210217021406842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210217021521209.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-02-17T17:18:52.339Z">
+<meta property="og:updated_time" content="2021-02-17T17:22:09.156Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 对象">
 <meta name="twitter:description" content="前言Java对象的探秘">
@@ -404,7 +404,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-02-18 01:18:52" itemprop="dateModified" datetime="2021-02-18T01:18:52+08:00">2021-02-18</time>
+                <time title="修改时间：2021-02-18 01:22:09" itemprop="dateModified" datetime="2021-02-18T01:22:09+08:00">2021-02-18</time>
               
             
           </span>
@@ -493,7 +493,7 @@
 </tbody></table>
 <h4 id="1丶Mark-Word"><a href="#1丶Mark-Word" class="headerlink" title="1丶Mark Word"></a>1丶Mark Word</h4><p>对象头包括两部分信息，第一部分用于存储对象自身的运行是数据，如哈希码丶GC分代年龄丶锁状态标志丶线程持有的锁丶偏向线程ID丶偏向时间戳等，这部分数据的长度在32位和64位的虚拟机（未开启压缩指针）中分别为32bit和64bit，官方称它为“Mark Word”。对象需要存储的运行时数据很多，其实已经超出了32位丶64位Bitmap结构所能记录的限度，但是对象头信息是与对象自身定义的数据无关的额外存储成本，考虑到虚拟机的空间效率，Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的信息，它会根据对象的状态复用自己的存储空间。</p>
 <p><strong>32位虚拟机</strong><br>markOop.hpp</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">32 bits:</span><br><span class="line">//  --------</span><br><span class="line">//             hash:25 ------------&gt;| age:4    biased_lock:1 lock:2 (normal object)</span><br><span class="line">//             JavaThread*:23 epoch:2 age:4    biased_lock:1 lock:2 (biased object)</span><br><span class="line">//             size:32 ------------------------------------------&gt;| (CMS free block)</span><br><span class="line">//             PromotedObject*:29 ----------&gt;| promo_bits:3 -----&gt;| (CMS promoted object)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//  32 bits:</span><br><span class="line">//  --------</span><br><span class="line">//             hash:25 ------------&gt;| age:4    biased_lock:1 lock:2 (normal object)</span><br><span class="line">//             JavaThread*:23 epoch:2 age:4    biased_lock:1 lock:2 (biased object)</span><br><span class="line">//             size:32 ------------------------------------------&gt;| (CMS free block)</span><br><span class="line">//             PromotedObject*:29 ----------&gt;| promo_bits:3 -----&gt;| (CMS promoted object)</span><br></pre></td></tr></table></figure>
 
 <p>在运行期间，随着锁标志位的变化，Mark Word可以变化成以下几种类型的数据：<br><img src="https://img-blog.csdnimg.cn/20210218005123591.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="32位虚拟机"><br><strong>64位虚拟机</strong><br>markOop.hpp</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//  64 bits:</span><br><span class="line">//  --------</span><br><span class="line">//  unused:25 hash:31 --&gt;| unused:1   age:4    biased_lock:1 lock:2 (normal object)</span><br><span class="line">//  JavaThread*:54 epoch:2 unused:1   age:4    biased_lock:1 lock:2 (biased object)</span><br><span class="line">//  PromotedObject*:61 ---------------------&gt;| promo_bits:3 -----&gt;| (CMS promoted object)</span><br><span class="line">//  size:64 -----------------------------------------------------&gt;| (CMS free block)</span><br></pre></td></tr></table></figure>
@@ -561,8 +561,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/02/17/TCP 三次握手 四次挥手/" rel="prev" title="TCP 三次握手 四次挥手">
-                TCP 三次握手 四次挥手 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/02/17/TCP报文格式/" rel="prev" title="TCP报文格式">
+                TCP报文格式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
