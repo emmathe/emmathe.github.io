@@ -105,7 +105,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210228014838805.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210228014859900.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210302015603418.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-03-02T17:36:11.241Z">
+<meta property="og:updated_time" content="2021-03-03T16:38:57.988Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java 垃圾收集器">
 <meta name="twitter:description" content="前言Java垃圾收集器">
@@ -403,7 +403,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-03-03 01:36:11" itemprop="dateModified" datetime="2021-03-03T01:36:11+08:00">2021-03-03</time>
+                <time title="修改时间：2021-03-04 00:38:57" itemprop="dateModified" datetime="2021-03-04T00:38:57+08:00">2021-03-04</time>
               
             
           </span>
@@ -512,14 +512,19 @@
 <p>由于整个过程中消耗最长的并发标记和并发清除过程收集器线程都可以与用户线程一起工作，所以，从总体上来说，CMS收集器的内存回收过程是与用户线程一起并发执行的。</p>
 <p><strong>缺点</strong>：</p>
 <ul>
-<li><p><strong>CMS收集器对CPU资源非常敏感</strong>。在并发阶段，它虽然不会导致用户线程停顿，但是会因为占用了一部分线程而导致应用程序变慢，总吞吐量降低。CMS默认启动的回收线程数是(CPU数量 + 3) / 4， 当CPU在4个以上时，并发回收时垃圾收集线程不少于25%的CPU资源，并且随着CPU数量的增加而下降。但是当CPU不足4个时，CMS对用户程序的影响就可能变得很大，如果本来CPU负载就比较大，还分出一半的运算能力去执行收集器线程，就可能导致用户程序的执行速度降低。为了应付这种情况，虚拟机提供一种称为“增量式并发收集器”（Incremental Concurrent Mark Sweep/ i-CMS）的CMS收集器变种，所做的事情和单CPU操作系统使用抢占式来模拟多任务机制的思想一样，就是在并发标记丶清除的时候让GC线程丶用户线程交替运行，尽量减少GC线程的独占资源的时间，虽然会增加垃圾收集的时间，但是会减少用户程序的影响，程序执行速度下降就没那么明显。实践证明，i-CMS收集器效果很一般，不提倡用户使用。</p>
-</li>
-<li><p><strong>CMS收集器无法处理浮动垃圾</strong>（由于CMS并发清理阶段用户线程还在运行着，伴随程序运行生产新的垃圾，这一部分垃圾出现在标记过程之后，CMS无法在当次收集中处理掉它们，只好留到下一次GC时再清理。这一部分垃圾就称为“浮动垃圾”），<strong>可能出现“Concurrent Mode Failure”失败而导致另外一次Full GC的产生</strong>。由于在垃圾收集阶段用户线程还需要运行，需要预留有足够的内存空间给用户线程使用，因此CMS收集器不能等待老年代几乎填满再进行收集。在JDK 1.5中，CMS收集器当老年代使用了68%的空间就会被激活。在JDK1.6中，CMS收集的启动阈值提升到92%。（可使用<font color="red"><strong>-XX:CMSInitiatingOccupancyFraction</strong></font>参数设置触发的百分比，参数设置太高很容易导致大量“Concurrent Mode Failure”失败，性能反而降低。）要是CMS运行期间预留的内存无法满足程序需要就会出现一次“Concurrent Mode Failure”失败，这是虚拟机将启动后备预案：临时启用Serial Old收集器来重新进行老年代的垃圾收集，这样停顿时间就很长了。</p>
-</li>
-<li><p><strong>CMS是基于标记-清除算法的垃圾收集器，这就意味着收集结束时会产生大量空间碎片</strong>。空间碎片过多时，将会给大对象分配带来麻烦，往往会出现老年代还有很大空间剩余，但是无法找到足够大的连续空间来分配当前对象，不得不提前触发一次Full GC。为了解决这个问题，CMS收集器提供了<font color="red"><strong>-XX:+UseCMSCompactFullCollection</strong></font>参数（默认开启），用于在CMS收集器顶不住要进行Full GC时开启内存碎片的合并整理过程，内存整理的过程是无法并发的，空间碎片问题没了，但停顿时间变长了，虚拟机还提供了另一个参数<font color="red"><strong>-XX:+UseCMSFullGCsBeforeCompaction</strong></font>，用于设置执行多少次不压缩Full GC后，跟着来一次带压缩的（默认值为0.表示每次都进行压缩）</p>
-<p>待续</p>
-</li>
+<li><strong>CMS收集器对CPU资源非常敏感</strong>。在并发阶段，它虽然不会导致用户线程停顿，但是会因为占用了一部分线程而导致应用程序变慢，总吞吐量降低。CMS默认启动的回收线程数是(CPU数量 + 3) / 4， 当CPU在4个以上时，并发回收时垃圾收集线程不少于25%的CPU资源，并且随着CPU数量的增加而下降。但是当CPU不足4个时，CMS对用户程序的影响就可能变得很大，如果本来CPU负载就比较大，还分出一半的运算能力去执行收集器线程，就可能导致用户程序的执行速度降低。为了应付这种情况，虚拟机提供一种称为“增量式并发收集器”（Incremental Concurrent Mark Sweep/ i-CMS）的CMS收集器变种，所做的事情和单CPU操作系统使用抢占式来模拟多任务机制的思想一样，就是在并发标记丶清除的时候让GC线程丶用户线程交替运行，尽量减少GC线程的独占资源的时间，虽然会增加垃圾收集的时间，但是会减少用户程序的影响，程序执行速度下降就没那么明显。实践证明，i-CMS收集器效果很一般，不提倡用户使用。</li>
+<li><strong>CMS收集器无法处理浮动垃圾</strong>（由于CMS并发清理阶段用户线程还在运行着，伴随程序运行生产新的垃圾，这一部分垃圾出现在标记过程之后，CMS无法在当次收集中处理掉它们，只好留到下一次GC时再清理。这一部分垃圾就称为“浮动垃圾”），<strong>可能出现“Concurrent Mode Failure”失败而导致另外一次Full GC的产生</strong>。由于在垃圾收集阶段用户线程还需要运行，需要预留有足够的内存空间给用户线程使用，因此CMS收集器不能等待老年代几乎填满再进行收集。在JDK 1.5中，CMS收集器当老年代使用了68%的空间就会被激活。在JDK1.6中，CMS收集的启动阈值提升到92%。（可使用<font color="red"><strong>-XX:CMSInitiatingOccupancyFraction</strong></font>参数设置触发的百分比，参数设置太高很容易导致大量“Concurrent Mode Failure”失败，性能反而降低。）要是CMS运行期间预留的内存无法满足程序需要就会出现一次“Concurrent Mode Failure”失败，这是虚拟机将启动后备预案：临时启用Serial Old收集器来重新进行老年代的垃圾收集，这样停顿时间就很长了。</li>
+<li><strong>CMS是基于标记-清除算法的垃圾收集器，这就意味着收集结束时会产生大量空间碎片</strong>。空间碎片过多时，将会给大对象分配带来麻烦，往往会出现老年代还有很大空间剩余，但是无法找到足够大的连续空间来分配当前对象，不得不提前触发一次Full GC。为了解决这个问题，CMS收集器提供了<font color="red"><strong>-XX:+UseCMSCompactFullCollection</strong></font>参数（默认开启），用于在CMS收集器顶不住要进行Full GC时开启内存碎片的合并整理过程，内存整理的过程是无法并发的，空间碎片问题没了，但停顿时间变长了，虚拟机还提供了另一个参数<font color="red"><strong>-XX:+UseCMSFullGCsBeforeCompaction</strong></font>，用于设置执行多少次不压缩Full GC后，跟着来一次带压缩的（默认值为0.表示每次都进行压缩）</li>
 </ul>
+<h2 id="G1收集器"><a href="#G1收集器" class="headerlink" title="G1收集器"></a>G1收集器</h2><p>G1收集器是一款面向服务端应用的垃圾收集器。与其他GC收集器相比，G1具备如下特点：</p>
+<ul>
+<li>并行与并发：G1能充分利用多CPU丶多核环境下的硬件优势，使用多个CPU来缩短“Stop-The-World”停顿的时间，部分其他收集器原本需要停顿Java线程执行的GC动作，G1收集器仍然可以通过并发的方式让Java程序继续执行。</li>
+<li>分代收集：与其他收集器一样，分代概念在G1依然得以保留。虽然G1可以不需要其他收集器配合就能独立管理整个GC堆，但它能够采用不同的方式去处理新创建的对象和已经存活了一段时间丶熬过多次GC的旧对象以获取更好的收集效果。</li>
+<li>空间整合：与CMS的“标记-清理”算法不同，G1从整体来看是基于“标记-整理”算法实现的收集器，从局部（两个Region之间）上来看是基于“复制”算法实现的，但无论如何，这两种算法都意味着G1运作期间不会产生内存空间碎片，收集后能提供规整的可用内存。这种特性有利于程序长时间运行，分配大对象时不会因为无法找到连续内存空间而提前触发下一次GC。</li>
+<li>可预测的停顿：这是G1相对于CMS的别一大优势，降低停顿时间是G1和CMS共同的关注点，但G1除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为M毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒，这几乎已经是实时Java（RTSJ）的垃圾收集器的特征了。</li>
+</ul>
+<p>在G1之前的其他收集器进行收集的范围都是整个新生代或者老年代，而G1不再是这样。G1收集器，它将整个Java堆划分为多个大小相等的独立区域（Region），虽然还保留有新生代和老年代的概念，但新生代和老年代不再是物理隔离的，它们都是一部分Region（不需要连续）的集合。</p>
+<p>G1收集器之所以能建立可预测的停顿时间模型，是因为它可以有计划地避免在整个Java堆中进行全区域的收集收集。G1跟踪各个Region里面的垃圾堆积大价值大小（回收所获得的空间大小以及回收所需时间的经验值），在后台维护一个优先列表，每次根据允许的收集时间，优先回收价值最大的Region（这也就是Garbage-First名称的由来）。这种使用Region划分内存空间以及有优先级的区域回收方式，保证了G1收集器在有限的时间内可以获取尽可能高的收集效率。</p>
 
       
     </div>
@@ -638,7 +643,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -747,7 +752,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#新生代区垃圾收集器"><span class="nav-number">2.</span> <span class="nav-text">新生代区垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial收集器"><span class="nav-number">2.0.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParNew收集器"><span class="nav-number">2.0.2.</span> <span class="nav-text">ParNew收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scavenge收集器"><span class="nav-number">2.0.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#老年代区垃圾收集器"><span class="nav-number">3.</span> <span class="nav-text">老年代区垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Old收集器"><span class="nav-number">3.0.1.</span> <span class="nav-text">Serial Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Old收集器"><span class="nav-number">3.0.2.</span> <span class="nav-text">Parallel Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS收集器"><span class="nav-number">3.0.3.</span> <span class="nav-text">CMS收集器</span></a></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#新生代区垃圾收集器"><span class="nav-number">2.</span> <span class="nav-text">新生代区垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial收集器"><span class="nav-number">2.0.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParNew收集器"><span class="nav-number">2.0.2.</span> <span class="nav-text">ParNew收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Scavenge收集器"><span class="nav-number">2.0.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#老年代区垃圾收集器"><span class="nav-number">3.</span> <span class="nav-text">老年代区垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Serial-Old收集器"><span class="nav-number">3.0.1.</span> <span class="nav-text">Serial Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Parallel-Old收集器"><span class="nav-number">3.0.2.</span> <span class="nav-text">Parallel Old收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CMS收集器"><span class="nav-number">3.0.3.</span> <span class="nav-text">CMS收集器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1收集器"><span class="nav-number">3.1.</span> <span class="nav-text">G1收集器</span></a></li></div>
             
 
           </div>
