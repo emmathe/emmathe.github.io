@@ -94,21 +94,20 @@
 
 
 
-  <meta name="description" content="前言TCP 三次握手 四次挥手">
-<meta name="keywords" content="网络编程">
+  <meta name="description" content="前言运行时栈帧结构">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="TCP 三次握手 四次挥手">
-<meta property="og:url" content="http://yoursite.com/2021/02/17/TCP 三次握手 四次挥手/index.html">
+<meta property="og:title" content="栈帧结构">
+<meta property="og:url" content="http://yoursite.com/2021/04/15/栈帧结构/index.html">
 <meta property="og:site_name" content="amy acker blog">
-<meta property="og:description" content="前言TCP 三次握手 四次挥手">
+<meta property="og:description" content="前言运行时栈帧结构">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210216164515717.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210216170017448.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:updated_time" content="2021-02-16T19:10:31.026Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210416042457148.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:updated_time" content="2021-04-15T20:25:25.571Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="TCP 三次握手 四次挥手">
-<meta name="twitter:description" content="前言TCP 三次握手 四次挥手">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210216164515717.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:title" content="栈帧结构">
+<meta name="twitter:description" content="前言运行时栈帧结构">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210416042457148.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
 
 
 
@@ -116,7 +115,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2021/02/17/TCP 三次握手 四次挥手/">
+  <link rel="canonical" href="http://yoursite.com/2021/04/15/栈帧结构/">
 
 
 
@@ -126,7 +125,7 @@
   };
 </script>
 
-  <title>TCP 三次握手 四次挥手 | amy acker blog</title>
+  <title>栈帧结构 | amy acker blog</title>
   
 
 
@@ -342,7 +341,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/17/TCP 三次握手 四次挥手/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/15/栈帧结构/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="amy acker">
@@ -359,7 +358,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">TCP 三次握手 四次挥手
+          <h1 class="post-title" itemprop="name headline">栈帧结构
 
               
             
@@ -385,12 +384,24 @@
                 
               
 
-              <time title="创建时间：2021-02-17 23:59:36 / 修改时间：03:10:31" itemprop="dateCreated datePublished" datetime="2021-02-17T23:59:36+08:00">2021-02-17</time>
+              <time title="创建时间：2021-04-15 23:01:58" itemprop="dateCreated datePublished" datetime="2021-04-15T23:01:58+08:00">2021-04-15</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-04-16 04:25:25" itemprop="dateModified" datetime="2021-04-16T04:25:25+08:00">2021-04-16</time>
               
             
           </span>
@@ -407,7 +418,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络编程/" itemprop="url" rel="index"><span itemprop="name">网络编程</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a></span>
 
                 
                 
@@ -442,100 +453,36 @@
       
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>TCP 三次握手 四次挥手</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>运行时栈帧结构</p>
 <a id="more"></a>
 
-<h2 id="TCP的连接和建立"><a href="#TCP的连接和建立" class="headerlink" title="TCP的连接和建立"></a>TCP的连接和建立</h2><p>TCP的连接和建立主要关注报文中的几个字段</p>
-<table>
-<thead>
-<tr>
-<th>字段</th>
-<th>长度(bit)</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>序号</td>
-<td>32</td>
-<td>TCP链接中传输的数据流中每个字节都编上一个序号。序号字段的值指的是本报文段所发送的数据的第一个字节的序号。</td>
-</tr>
-<tr>
-<td>确认号</td>
-<td>32</td>
-<td>是期望收到对方的下一个报文段的数据的第1个字节的序号，即上次已成功接收到的数据字节序号加1。只有ACK标识为1，此字段有效。</td>
-</tr>
-<tr>
-<td>ACK</td>
-<td>1</td>
-<td>确认号有效标识。只有当ACK=1时确认号字段才有效。当ACK=0时，确认号无效。</td>
-</tr>
-<tr>
-<td>SYN</td>
-<td>1</td>
-<td>同步序号标识，用来发起一个连接。SYN=1表示这是一个连接请求或连接接受请求。</td>
-</tr>
-<tr>
-<td>FIN</td>
-<td>1</td>
-<td>发端完成发送任务标识。用来释放一个连接。FIN=1表明此报文段的发送端的数据已经发送完毕，并要求释放连接。</td>
-</tr>
-</tbody></table>
-<h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><p>TCP/IP采用三次握手来建立连接<br><img src="https://img-blog.csdnimg.cn/20210216164515717.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="三次握手"></p>
-<table>
-<thead>
-<tr>
-<th>过程</th>
-<th>报文</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>第一次握手</td>
-<td>SYN = 1, seq = x</td>
-<td>Client向Server发送一个连接请求 SYN = 1(表示这个报文是一个连接请求)，同时发送自己的序号seq = x</td>
-</tr>
-<tr>
-<td>第二次握手</td>
-<td>SYN = 1, ACK = 1, ack = x + 1, seq = y</td>
-<td>收到Client发来的报文，回复Client一个确认报文作为应答 ACK = 1(确认报文)，接着发送一个确认号ack = x + 1(+1是代表它收到了SYN标识)，SYN = 1（代表连接接受请求），同时发送自己的序号seq = y</td>
-</tr>
-<tr>
-<td>第三次握手</td>
-<td>ACK = 1, ack = y + 1</td>
-<td>Client收到Server的响应报文，它也要回复确认报文 ACK = 1(代表确认报文)，ack = Y + 1(对方的序号+1，表示收到对方的SYN标识)</td>
-</tr>
-</tbody></table>
-<p><strong>注</strong>：为啥要3次握手<br>前两次握手 客户端可以知道服务器可以收到报文，也可以发送给我，但是服务器并不知道客户端能否收到，所有需要三次握手，即客户端再发送一个确认报文</p>
-<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>TCP/IP采用四次挥手来关闭连接<br><img src="https://img-blog.csdnimg.cn/20210216170017448.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="四次挥手"></p>
-<table>
-<thead>
-<tr>
-<th>过程</th>
-<th>报文</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>第一次挥手</td>
-<td>FIN = 1, seq = x</td>
-<td>Client发送一个FIN = 1的包(代表要释放连接)，同时发送自己的序号 seq = x</td>
-</tr>
-<tr>
-<td>第二次挥手</td>
-<td>ACK = 1, ack = x + 1</td>
-<td>Server收到Client的FIN包，则发送一个确认包，表示自己接受到Client的关闭连接请求（还没准备好关闭连接）</td>
-</tr>
-<tr>
-<td>第三次挥手</td>
-<td>FIN = 1, seq = y</td>
-<td>当Server准备好关闭连接时，向Client发送结束连接请求，FIN置为1，同时发送自己的序号seq = y</td>
-</tr>
-<tr>
-<td>第四次挥手</td>
-<td>ACK = 1, ack = y + 1</td>
-<td>Client接收到Server的关闭请求，发送一个确认包，Server收到确认包，就会关闭连接，进入CLOSED状态，Server关闭后，将不再回应Client，Client等待某个时间后，将会自行关闭，进入CLOSED状态，这时完成TCP连接释放</td>
-</tr>
-</tbody></table>
+<h2 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h2><p>栈帧（Stack Frame）是用于支持虚拟机进行方法调用和方法执行的数据结构，它是虚拟机运行时数据区中的虚拟机栈的栈元素。栈帧存储了方法的局部变量表丶操作数栈丶动态连接和方法返回地址等信息。每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。对于执行引擎来说，在活动线程中，只有位于栈顶的栈帧才是有效的，称为当前栈帧。与当前栈帧相关联的方法，称为当前方法。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210416042457148.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="栈帧结构"></p>
+<h2 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h2><p>局部变量表（Local Variable Table）是一组变量值存储空间，用于存放方法参数和方法内部定义的局部变量。在Java程序编译为Class文件时，就在方法的Code属性的max_locals数据项中确定了该方法所需要分配的局部变量表的最大容量。容量的最小单位为变量槽（Variable Slot，简称Slot）。</p>
+<p>虚拟机规范中并没有明确指明一个Slot应占用的内存空间大小，只是很有导向性地说到每个Slot都应该能存放一个boolean丶byte丶char丶short丶int丶float丶reference或者returnAddress类型数据。这8种数据类型，都可以使用32位以内的物理内存来存放。也就是说一个Slot可以存放一个32位以内的数据类型。对于64位的数据类型，虚拟机会以高位对齐的方式为其分配两个连续的Slot空间。Java语言中明确的64位的数据类型只有long和double两种。</p>
+<blockquote>
+<p>值得一提的是，这里把long和double数据类型分割存储的做法与“long和double的非原子性协定”中把一次long和double数据类型读写分割为两次32位读写的做法有些类型。不过由于局部变量表建立在线程的堆栈上，是线程私有的数据，无论读写两个连续的Slot是否为原子操作，都不会引起数据安全问题。</p>
+</blockquote>
+<blockquote>
+<p>Slot的长度可以随着处理器丶操作系统或者虚拟机的不同而发生变化。只要保证即使在64为虚拟机中使用了64位的物理内存空间去实现一个Slot，虚拟机仍要使用对齐和补白的手段让Slot在外观看起来与32位虚拟机中的一致。</p>
+</blockquote>
+<p>虚拟机通过索引定位的方式使用局部变量表，索引值的范围是从0开始至局部变量表最大的Slot数量。如果访问的是32位数据类型的变量，索引n就代表了使用第n个Slot。如果是64位数据类型的变量，则说明会同时使用n和n+1两个Slot。</p>
+<blockquote>
+<p>对于存放一个64位数据类型的两个相邻的Slot，不允许采用任何方式单独访问其中一个，如果遇到进行这个操作的字节码序列，虚拟机应该在类加载的校验阶段抛出异常。</p>
+</blockquote>
+<p>在方法执行时，虚拟机是使用局部变量表完成参数值到参数变量列表的传递过程的，如果执行的是实例方法（非static的方法），那局部变量表的第0位索引的Slot默认是用于传递方法所属对象实例的引用，在方法中可以通过关键字“this”来访问这个隐含的参数。</p>
+<p>局部变量表中的Slot是可以重用的，是为了尽可能节省栈帧空间，方法体中定义的变量，其作用域并不一定会覆盖整个方法体，如果当前字节码PC计数器的值已经超出了某个变量的作用域，那这个变量对应的Slot就可以交给其他变量使用。不过，这样的设计会伴随一些额外的副作用，如直接影响到系统的垃圾收集行为。</p>
+<h2 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h2><p>操作数栈（Operand Stack）也常称为操作栈，它是一个后入先出栈。同局部变量表一样，操作数栈的最大深度也在编译的时候写入到Code属性的max_stacks数据项中。操作数栈的每一个元素可以是任意的Java数据类型，包括long和double。32位数据类型所占的栈容量为1，64位数据类型所占的栈容量为2。在方法执行的任何时候，操作数栈的深度都不会超过在max_stacks数据项中设定的最大值。</p>
+<p>当一个方法刚刚开始执行的时候，这个方法的操作数栈是空的，在方法的执行过程中，会有各种字节码指令往操作数栈中写入和提取内容，也就是出栈和入栈操作。</p>
+<blockquote>
+<p>另外，在概念模型中，两个栈帧作为虚拟机栈的元素，是完全相互独立的。但在大多虚拟机的实现里都会做一些优化处理，令两个栈帧出现一部分重叠。让下面栈帧的部分操作数栈与上面栈帧的部分变量表重叠在一起，这样在进行方法调用时就可以共用一部分数据，无须进行额外的参数复制传递。</p>
+</blockquote>
+<h2 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h2><p>每一个栈帧都包含一个指向运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态连接（Dynamic Linking）。Class文件的常量池中存有大量的符号引用，字节码中的方法调用指令就以常量池中指向方法的符号引用作为参数。这些符号引用一部分会在类加载阶段或者第一次使用的时候就转化为直接引用，这种转化称为静态解析。另外一部分将在每一次运行期间转化为直接引用，这部分称为动态连接。</p>
+<h2 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h2><p>当一个方法开始执行后，只有两种方法可以退出这个方法。第一种方法是执行引擎遇到任何一个方法返回的字节码指令，这时候可能会有返回值传递给上层的方法调用者，是否有返回和返回值的类型将根据遇到何种方法返回指令来决定，这种退出方法的方式称为正常完成出口。另外一种退出方法是，在方法执行过程中遇到异常，并且这个异常没有在方法体内得到处理，就会导致方法退出，这种退出方法的方式称为异常完成出口。</p>
+<blockquote>
+<p>无论采用哪种退出方式，在方法退出之后，都需要返回到方法被调用的位置，程序才能继续执行。一般来说，方法正常退出时，调用者的PC计数器可以作为返回地址，栈帧中很可能会保存这个计数器值。而方法异常退出时，返回地址是要通过异常处理器表来确定的，栈帧中一般不会保存这部分信息。</p>
+</blockquote>
+<p>方法退出的过程实际上就等同于把当前栈帧出栈，因此退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，把返回值压入调用者栈帧的操作数栈中，调整PC计数器的值以指向方法调用指令后面的一条指令等。</p>
 
       
     </div>
@@ -562,7 +509,7 @@
         
         <div class="post-tags">
           
-            <a href="/tags/网络编程/" rel="tag"># 网络编程</a>
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
           
         </div>
       
@@ -575,8 +522,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/02/17/TCP报文格式/" rel="next" title="TCP报文格式">
-                <i class="fa fa-chevron-left"></i> TCP报文格式
+              <a href="/2021/04/15/虚拟机类加载机制/" rel="next" title="虚拟机类加载机制">
+                <i class="fa fa-chevron-left"></i> 虚拟机类加载机制
               </a>
             
           </div>
@@ -584,10 +531,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2021/02/20/Java GC日志/" rel="prev" title="Java GC日志">
-                Java GC日志 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -767,7 +710,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP的连接和建立"><span class="nav-number">1.1.</span> <span class="nav-text">TCP的连接和建立</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三次握手"><span class="nav-number">1.2.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四次挥手"><span class="nav-number">1.3.</span> <span class="nav-text">四次挥手</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.2.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作数栈"><span class="nav-number">1.3.</span> <span class="nav-text">操作数栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态连接"><span class="nav-number">1.4.</span> <span class="nav-text">动态连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法返回地址"><span class="nav-number">1.5.</span> <span class="nav-text">方法返回地址</span></a></li></ol></li></ol></div>
             
 
           </div>
