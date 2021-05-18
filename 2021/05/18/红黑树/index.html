@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言红黑树（英语：Red–black tree）是一种自平衡二叉查找树，是在计算机科学中用到的一种数据结构，典型用途是实现关联数组。它在1972年由鲁道夫·贝尔发明，被称为”对称二叉B树“，它现代的名字源于Leo J. Guibas和Robert Sedgewick于1978年写的一篇论文。红黑树的结构复杂，但它的操作有着良好的最坏情况运行时间，并且在实践中高效">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="红黑树">
+<meta property="og:url" content="http://yoursite.com/2021/05/18/红黑树/index.html">
+<meta property="og:site_name" content="amy acker blog">
+<meta property="og:description" content="前言红黑树（英语：Red–black tree）是一种自平衡二叉查找树，是在计算机科学中用到的一种数据结构，典型用途是实现关联数组。它在1972年由鲁道夫·贝尔发明，被称为”对称二叉B树“，它现代的名字源于Leo J. Guibas和Robert Sedgewick于1978年写的一篇论文。红黑树的结构复杂，但它的操作有着良好的最坏情况运行时间，并且在实践中高效">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232410965.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232455110.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232523367.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232617917.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232654818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232722344.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021051823281718.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232942443.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518232958789.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518233031953.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518233058365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210518233142433.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:updated_time" content="2021-05-18T15:47:02.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="红黑树">
+<meta name="twitter:description" content="前言红黑树（英语：Red–black tree）是一种自平衡二叉查找树，是在计算机科学中用到的一种数据结构，典型用途是实现关联数组。它在1972年由鲁道夫·贝尔发明，被称为”对称二叉B树“，它现代的名字源于Leo J. Guibas和Robert Sedgewick于1978年写的一篇论文。红黑树的结构复杂，但它的操作有着良好的最坏情况运行时间，并且在实践中高效">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210518232410965.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2021/05/18/红黑树/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>红黑树 | amy acker blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">amy acker blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/18/红黑树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="amy acker">
+      <meta itemprop="description" content="记录">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="amy acker blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">红黑树
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-05-18 21:01:58 / 修改时间：23:47:02" itemprop="dateCreated datePublished" datetime="2021-05-18T21:01:58+08:00">2021-05-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><strong>红黑树</strong>（英语：Red–black tree）是一种<a href="https://www.hk.jwchfzu.top/baike-自平衡二叉查找树" target="_blank" rel="noopener">自平衡二叉查找树</a>，是在<a href="https://www.hk.jwchfzu.top/baike-计算机科学" target="_blank" rel="noopener">计算机科学</a>中用到的一种<a href="https://www.hk.jwchfzu.top/baike-数据结构" target="_blank" rel="noopener">数据结构</a>，典型用途是实现<a href="https://www.hk.jwchfzu.top/baike-关联数组" target="_blank" rel="noopener">关联数组</a>。它在1972年由<a href="https://www.hk.jwchfzu.top/baike-鲁道夫·贝尔" target="_blank" rel="noopener">鲁道夫·贝尔</a>发明，被称为”<strong>对称二叉B树</strong>“，它现代的名字源于Leo J. Guibas和<a href="https://www.hk.jwchfzu.top/baike-Robert_Sedgewick" target="_blank" rel="noopener">Robert Sedgewick</a>于<a href="https://www.hk.jwchfzu.top/baike-1978年" target="_blank" rel="noopener">1978年</a>写的一篇论文。红黑树的结构复杂，但它的操作有着良好的最坏情况<a href="https://www.hk.jwchfzu.top/baike-算法分析" target="_blank" rel="noopener">运行时间</a>，并且在实践中高效</p>
+<a id="more"></a>
+
+<p><img src="https://img-blog.csdnimg.cn/20210518232410965.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="红黑树"></p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><ul>
+<li>节点是红色或黑色</li>
+<li>根是黑色</li>
+<li>所有叶子都是黑色（叶子是NIL节点）</li>
+<li>每个红色节点必须有两个黑色的子节点（从每个叶子到根的所有路径上不能有两个连续的红色节点）</li>
+<li>从任一节点到其每个叶子的所有<a href="https://www.hk.jwchfzu.top/baike-道路_(图论)" target="_blank" rel="noopener">简单路径</a>都包含相同数目的黑色节点</li>
+</ul>
+<h2 id="自平衡操作"><a href="#自平衡操作" class="headerlink" title="自平衡操作"></a>自平衡操作</h2><ul>
+<li>变色：节点的颜色由红变黑或者由黑变红<br><img src="https://img-blog.csdnimg.cn/20210518232455110.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="左旋"><br>左旋：以某个节点为旋转节点，其右子节点变为旋转节点的父节点，右子节点的左子节点变为旋转节点的右子节点，左子节点保持不变<br><img src="https://img-blog.csdnimg.cn/20210518232523367.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="右旋"><br>右旋：以某个节点为旋转节点，其左子节点变为旋转节点的父节点，左子节点的右子节点变为旋转节点的左子节点，右子节点保持不变<h2 id="插入操作的平衡调整"><a href="#插入操作的平衡调整" class="headerlink" title="插入操作的平衡调整"></a>插入操作的平衡调整</h2></li>
+</ul>
+<p>红黑树规定，插入的节点必须是红色的。关于插入操作的平衡调整，有两种特殊情况，非常好处理：</p>
+<ul>
+<li><p>如果插入节点的父节点是黑色的，那我们什么都不用做，它仍然满足红黑树的定义。</p>
+</li>
+<li><p>如果插入的节点是根节点，那我们直接改变它的颜色，把它变成黑色就可以了。</p>
+</li>
+</ul>
+<p>除此之外，其他情况会违背红黑树的性质，于是需要进行调整。新节点插入之后，如果红黑树的平衡被打破了，那一般会有下面3种情况：</p>
+<blockquote>
+<p>正在处理的节点为X丶父节点为P丶叔叔节点为S丶祖父节点为G丶Hx代表其子树的BH（黑高，如H2，即黑高为2）</p>
+</blockquote>
+<h4 id="CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色"><a href="#CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色" class="headerlink" title="CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色"></a>CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色</h4><p><img src="https://img-blog.csdnimg.cn/20210518232617917.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将父节点P丶叔叔节点Y的颜色都设置为黑色</li>
+<li>将祖父节点G的颜色设置成红色</li>
+<li>正在处理的节点X回溯至祖父节点G（正在处理的节点就是G了，继续调整）</li>
+</ul>
+<blockquote>
+<p>分析：G为红色，可能违背红黑树的性质，需要继续调整（如果G为根节点，则把G的颜色设置为黑色，即满足红黑树的性质，调整结束，此时整个红黑树的BH增加1，这是唯一增加整个红黑树的BH的情形）</p>
+</blockquote>
+<h4 id="CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点"><a href="#CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点" class="headerlink" title="CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点"></a>CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点</h4><p><img src="https://img-blog.csdnimg.cn/20210518232654818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>围绕父节点P左旋</li>
+<li>把X指向P（即P变成了正在处理的节点）</li>
+<li>跳到CASE3</li>
+</ul>
+<blockquote>
+<p>分析：P丶X的关系仍然违背了红黑树的性质，需要继续调整</p>
+</blockquote>
+<h4 id="CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点"><a href="#CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点" class="headerlink" title="CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点"></a>CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点</h4><p><img src="https://img-blog.csdnimg.cn/20210518232722344.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将父节点P的颜色设置为黑色，祖父节点G的颜色设置为红色</li>
+<li>围绕祖父节点右旋</li>
+<li>调整结束</li>
+</ul>
+<blockquote>
+<p>分析：最后满足红黑树的性质，调整结束</p>
+</blockquote>
+<h2 id="删除操作的平衡调整"><a href="#删除操作的平衡调整" class="headerlink" title="删除操作的平衡调整"></a>删除操作的平衡调整</h2><p>红黑树的删除操作的平衡调整要比插入的相对难点。不过原理类似，我们仍然根据正在处理的节点与周围的节点分布特点，来进行一定规则的调整。</p>
+<blockquote>
+<p>正在处理的节点为X丶父节点P丶兄弟节点S丶左侄LN丶右侄RN丶Hx代表其子树的BH<br>下面正在处理的节点X均为父节点P的左孩子，如果是右孩子，则为镜像操作</p>
+</blockquote>
+<h4 id="CASE1：如果正在处理的节点是X，它的兄弟节点S是红色"><a href="#CASE1：如果正在处理的节点是X，它的兄弟节点S是红色" class="headerlink" title="CASE1：如果正在处理的节点是X，它的兄弟节点S是红色"></a>CASE1：如果正在处理的节点是X，它的兄弟节点S是红色</h4><p><img src="https://img-blog.csdnimg.cn/2021051823281718.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将兄弟节点的颜色设置为黑色</li>
+<li>将父节点的颜色色泽为红色</li>
+<li>围绕父节点P左旋，操作后LN变成新的兄弟节点</li>
+</ul>
+<blockquote>
+<p>分析：X的BH比LN的BH少1，即违背了红黑树的性质，继续调整</p>
+</blockquote>
+<h4 id="CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色"><a href="#CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色" class="headerlink" title="CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色"></a>CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色</h4><h4 id="2-1：父节点P是黑色"><a href="#2-1：父节点P是黑色" class="headerlink" title="2-1：父节点P是黑色"></a>2-1：父节点P是黑色</h4><p><img src="https://img-blog.csdnimg.cn/20210518232942443.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将兄弟节点S的颜色设置为红色</li>
+<li>正在处理的节点X回溯至父节点P（正在处理的节点就是P了，继续调整）</li>
+</ul>
+<blockquote>
+<p>分析：调整后P的黑高减少了1，即会整个红黑树的的每个节点到达其可达叶子节点的所有路径，包含的黑色节点的数目不同，这违背了红黑树的性质，需要继续调整（若P为根节点的，则执行该步骤会引起BH的减少，这是唯一减小整个红黑树的BH）</p>
+</blockquote>
+<h4 id="2-2：父节点P是红色"><a href="#2-2：父节点P是红色" class="headerlink" title="2-2：父节点P是红色"></a>2-2：父节点P是红色</h4><p><img src="https://img-blog.csdnimg.cn/20210518232958789.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将兄弟节点S的颜色设置为红色</li>
+<li>将父节点P的颜色设置为黑色</li>
+</ul>
+<blockquote>
+<p>分析：在父节点没有变色前，其分析和case 2-1是一致的，父节点变色之后，P减少的BH就补回来了，即满足所有性质，调整结束</p>
+</blockquote>
+<h4 id="CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色"><a href="#CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色" class="headerlink" title="CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色"></a>CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色</h4><p><img src="https://img-blog.csdnimg.cn/20210518233031953.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将左侄节点LN的颜色设置为黑色</li>
+<li>将兄弟节点S的颜色设置为红色</li>
+<li>围绕兄弟节点S右旋</li>
+<li>S指向LN</li>
+<li>跳到CASE4</li>
+</ul>
+<blockquote>
+<p>分析：X的BH仍然比LN的BH少1，即继续调整</p>
+</blockquote>
+<h4 id="CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色"><a href="#CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色" class="headerlink" title="CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色"></a>CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色</h4><h4 id="4-1：LN为红色"><a href="#4-1：LN为红色" class="headerlink" title="4-1：LN为红色"></a>4-1：LN为红色</h4><p><img src="https://img-blog.csdnimg.cn/20210518233058365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将兄弟节点S的颜色设置为与父节点P的颜色相同</li>
+<li>将父节点P的颜色设置为黑色</li>
+<li>将S的右子节点RN的颜色设置为黑</li>
+<li>围绕父节点P左旋</li>
+<li>X指向根节点</li>
+</ul>
+<blockquote>
+<p>分析：调整后满足红黑树的性质，调整结束</p>
+</blockquote>
+<h4 id="4-2：LN为黑色"><a href="#4-2：LN为黑色" class="headerlink" title="4-2：LN为黑色"></a>4-2：LN为黑色</h4><p><img src="https://img-blog.csdnimg.cn/20210518233142433.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li>将兄弟节点S的颜色设置为与父节点P的颜色相同</li>
+<li>将父节点P的颜色设置为黑色</li>
+<li>将S的右子节点RN的颜色设置为黑</li>
+<li>围绕父节点P左旋</li>
+<li>X指向根节点</li>
+</ul>
+<blockquote>
+<p>分析：调整后满足红黑树的性质，调整结束</p>
+</blockquote>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/ThreadLocal源码/" rel="next" title="ThreadLocal源码解析">
+                <i class="fa fa-chevron-left"></i> ThreadLocal源码解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.gif" alt="amy acker">
+            
+              <p class="site-author-name" itemprop="name">amy acker</p>
+              <div class="site-description motion-element" itemprop="description">记录</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/yorshk" title="GitHub &rarr; https://github.com/yorshk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自平衡操作"><span class="nav-number">1.2.</span> <span class="nav-text">自平衡操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入操作的平衡调整"><span class="nav-number">1.3.</span> <span class="nav-text">插入操作的平衡调整</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">CASE1：如果正在处理的节点是X，它的叔叔节点Y是红色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">CASE2：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的右子节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">CASE3：如果正在处理的节点是X，它的叔叔节点Y是黑色，X是其父节点P的左子节点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除操作的平衡调整"><span class="nav-number">1.4.</span> <span class="nav-text">删除操作的平衡调整</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE1：如果正在处理的节点是X，它的兄弟节点S是红色"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">CASE1：如果正在处理的节点是X，它的兄弟节点S是红色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">CASE2：如果正在处理的节点是X，它的兄弟节点S丶兄弟节点的左右子节点均为黑色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1：父节点P是黑色"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">2-1：父节点P是黑色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2：父节点P是红色"><span class="nav-number">1.4.0.4.</span> <span class="nav-text">2-2：父节点P是红色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色"><span class="nav-number">1.4.0.5.</span> <span class="nav-text">CASE3：如果正在处理的节点是X，它的兄弟节点S是黑色，S的左子节点LN为红色，右子节点RN为黑色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色"><span class="nav-number">1.4.0.6.</span> <span class="nav-text">CASE4：如果正在处理的节点是X，它的兄弟节点S是黑色，父节点P可红可黑，S的右子节点RN为黑色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1：LN为红色"><span class="nav-number">1.4.0.7.</span> <span class="nav-text">4-1：LN为红色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2：LN为黑色"><span class="nav-number">1.4.0.8.</span> <span class="nav-text">4-2：LN为黑色</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">amy acker</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
