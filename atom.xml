@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2021-05-18T15:47:02.533Z</updated>
+  <updated>2021-06-02T20:42:05.396Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>HashMap中hash算法详解</title>
+    <link href="http://yoursite.com/2021/06/01/HashMap%E4%B8%ADhash%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/"/>
+    <id>http://yoursite.com/2021/06/01/HashMap中hash算法详解/</id>
+    <published>2021-06-01T13:01:58.000Z</published>
+    <updated>2021-06-02T20:42:05.396Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>HashMap中hash算法（扰动函数）详解</p><a id="more"></a><h2 id="hash源码"><a href="#hash源码" class="headerlink" title="hash源码"></a>hash源码</h2><p>HashMap中是如何根据key来计算出对应的bucket呢，下面通过源码来分析</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">    return putVal(hash(key), key, value, false, true);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">               boolean evict) &#123;</span><br><span class="line">    HashMap.Node&lt;K,V&gt;[] tab; HashMap.Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">    if ((tab = table) == null || (n = tab.length) == 0)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    if ((p = tab[i = (n - 1) &amp; hash]) == null)</span><br><span class="line">        tab[i] = newNode(hash, key, value, null);</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">    int h;</span><br><span class="line">    return (key == null) ? 0 : (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h4 id="看完上面的源码我们可以简单的分析下实现步骤"><a href="#看完上面的源码我们可以简单的分析下实现步骤" class="headerlink" title="看完上面的源码我们可以简单的分析下实现步骤"></a>看完上面的源码我们可以简单的分析下实现步骤</h4><ol><li>计算key的hashCode</li><li>再根据hashCode进行无符号右移16位</li><li>再把两者（高16位和低16位）进行异或</li><li>再和(n - 1)进行与运算</li></ol><h4 id="下面我们根据步骤尝试计算下"><a href="#下面我们根据步骤尝试计算下" class="headerlink" title="下面我们根据步骤尝试计算下"></a>下面我们根据步骤尝试计算下</h4><table><thead><tr><th>hash运算步骤</th><th>32位二进制</th></tr></thead><tbody><tr><td>h = key.hashCode()</td><td>0100 1001 1010 0110 1101 1010 1011 0111</td></tr><tr><td>h &gt;&gt;&gt; 16</td><td>0000 0000 0000 0000 0100 1001 1010 0110</td></tr><tr><td>hash = h ^ (h &gt;&gt;&gt; 16)</td><td>0100 1001 1010 0110 1001 0011 0001 0001</td></tr><tr><td>(n - 1)</td><td>0000 0000 0000 0000 0000 0000 0000 1111</td></tr><tr><td>i = (n - 1) &amp; hash</td><td>0000 0000 0000 0000 0000 0000 0000 0001</td></tr></tbody></table><p>假设hashCode为0100 1001 1010 0110 1101 1010 1011 0111，我们计算出最后该值会分配到bucket1中。</p><blockquote><p>这里对于hashCode计算就不阐述了</p></blockquote><h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><p>看完上面的分析之后，我们可能有些疑惑，为什么要根据hashCode进行无符号右移16位（<strong>h &gt;&gt;&gt; 16</strong>），再进行高低位的异或操作呢</p><p>假设把<strong>h ^ (h &gt;&gt;&gt; 16)</strong>这步骤去掉的话，我们不难发现当bucket的数量很少时，<strong>n-1</strong>的高位永远都是0，如果这时出现了高位不同，低位相同的hashCode的话，那么都只是与<strong>n-1</strong>进行低位的按位与运算。如果加上<strong>h ^ (h &gt;&gt;&gt; 16)</strong>这步骤，让高位也能参加到计算，就能有效的避免遇到高位不同，低位相同的数值时发生的哈希碰撞。</p><h4 id="不进行无符号右移16位的列子"><a href="#不进行无符号右移16位的列子" class="headerlink" title="不进行无符号右移16位的列子"></a>不进行无符号右移16位的列子</h4><table><thead><tr><th>步骤</th><th>二进制</th><th>二进制</th></tr></thead><tbody><tr><td>hash = key.hashCode()</td><td>0100 1001 1010 0000 <strong>1101 1010 1011 0111</strong></td><td>0100 0001 1010 0110 <strong>1101 1010 1011 0111</strong></td></tr><tr><td>(n - 1)</td><td>0000 0000 0000 0000 0000 0000 0000 1111</td><td>0000 0000 0000 0000 0000 0000 0000 1111</td></tr><tr><td>i = (n - 1) &amp; hash</td><td>0000 0000 0000 0000 0000 0000 0000 0111</td><td>0000 0000 0000 0000 0000 0000 0000 0111</td></tr></tbody></table><h4 id="进行无符号右移16位的列子"><a href="#进行无符号右移16位的列子" class="headerlink" title="进行无符号右移16位的列子"></a>进行无符号右移16位的列子</h4><table><thead><tr><th>步骤</th><th>二进制</th><th>二进制</th></tr></thead><tbody><tr><td>h = key.hashCode()</td><td>0100 1001 1010 0000 <strong>1101 1010 1011 0111</strong></td><td>0100 0001 1010 0110 <strong>1101 1010 1011 0111</strong></td></tr><tr><td>h &gt;&gt;&gt; 16</td><td>0000 0000 0000 0000 0100 1001 1010 0000</td><td>0000 0000 0000 0000 0100 0001 1010 0110</td></tr><tr><td>hash = h ^ (h &gt;&gt;&gt; 16)</td><td>0100 1001 1010 0000 1001 0011 0001 0111</td><td>0100 1001 1010 0000 1001 1011 0001 0001</td></tr><tr><td>(n - 1)</td><td>0000 0000 0000 0000 0000 0000 0000 0111</td><td>0000 0000 0000 0000 0000 0000 0000 0111</td></tr><tr><td>i = (n - 1) &amp; hash</td><td>0000 0000 0000 0000 0000 0000 0000 0111</td><td>0000 0000 0000 0000 0000 0000 0000 0001</td></tr></tbody></table><p>上面列子可以看出，在遇到高位不同，低位相同的hashCode时，不进行无符号右移操作的列子发生了哈希碰撞，进去无符号右移的列子则没发生哈希碰撞</p><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>之所以进行无符号右移16位（<strong>h ^ (h &gt;&gt;&gt; 16)</strong>）的操作，是因为可以有效避免遇到高位不同，低位相同的hash时的哈希碰撞。</p><h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><p>在进行<strong>i = (n - 1) &amp; hash</strong>的操作时，n的取值是至关重要的，我们都知道在HashMap中，HashMap的容量必需为<strong>2^n</strong>，那为什么必需为<strong>2^n</strong>呢？，接下来我们来分析下。</p><table><thead><tr><th>2^n</th><th>2^n（二进制）</th><th>(2^n) - 1（二进制）</th></tr></thead><tbody><tr><td>2</td><td>10</td><td>1</td></tr><tr><td>4</td><td>100</td><td>11</td></tr><tr><td>8</td><td>1000</td><td>111</td></tr><tr><td>16</td><td>10000</td><td>1111</td></tr></tbody></table><p>从上面我们可以看出，<strong>(2^n) - 1</strong>后二进制的低位都为1。那低位均为1，这样有什么作用吗？</p><p>在<strong>i = (n - 1) &amp; hash</strong> 的运算中，假设n = 6， <strong>(n - 1)</strong> 的二进制为0000 0000 0000 0000 0000 0000 0000 0<strong>101</strong>，与之进行按位与运算的就只有最后3位，即hash的最后3位可能出现的结果如下：</p><table><thead><tr><th>hash</th><th>i = 101 &amp; hash</th></tr></thead><tbody><tr><td>000</td><td>0</td></tr><tr><td>001</td><td>1</td></tr><tr><td>010</td><td>0</td></tr><tr><td>100</td><td>4</td></tr><tr><td>101</td><td>5</td></tr><tr><td>110</td><td>4</td></tr><tr><td>111</td><td>5</td></tr></tbody></table><p>从上面列子可以看出，<strong>n = 6</strong>时，出现了分布不均匀，计算不出i = 2或者3的结果，这说明了bucket2和bucket3永远为空。</p><p>接下来我们把n换成2^n，假设n = 8，<strong>(n - 1)</strong> 的二进制为0000 0000 0000 0000 0000 0000 0000 0<strong>111</strong>，与之进行按位与运算的就只有最后3位，即hash的最后3位可能出现的结果如下：</p><table><thead><tr><th>hash</th><th>i = 111 &amp; hash</th></tr></thead><tbody><tr><td>000</td><td>0</td></tr><tr><td>001</td><td>1</td></tr><tr><td>010</td><td>2</td></tr><tr><td>100</td><td>4</td></tr><tr><td>011</td><td>3</td></tr><tr><td>101</td><td>5</td></tr><tr><td>110</td><td>6</td></tr><tr><td>111</td><td>7</td></tr></tbody></table><p>我们可以看出，在n是2^n下，能计算出所有bucket的值，这说明了哈希分布较均匀，能有效降低发生哈希碰撞的概率。</p><blockquote><p>为什么进行<strong>i = (n - 1) &amp; hash</strong>操作时要<strong>n-1</strong>，这里其实也是为了减少哈希碰撞，假设不减一的话，二进制低位一定为0，进行按位与运算后依旧为0，导致最后计算出的值均为偶数，且奇数的bucket不可能存有数据，从而造成空间浪费，同时增加发生哈希碰撞的概率。假设进行减一的话，二进制低位一定为1，然后与hash进行按位与运算，低位就可能是0或者1，计算出的值就可能是奇数或者偶数，从而降低了发生哈希碰撞的概率。</p></blockquote><p><strong>2^n在进行resize()操作时，也是有妙处的。</strong></p><table><thead><tr><th></th><th>n = 16</th><th>n = 32</th></tr></thead><tbody><tr><td>hash</td><td>0100 1001 1010 0110 1001 0011 0001 0001</td><td>0100 1001 1010 0110 1001 0011 0001 0001</td></tr><tr><td>n-1</td><td>0000 0000 0000 0000 0000 0000 000<strong>0 1111</strong></td><td>0000 0000 0000 0000 0000 0000 000<strong>1 1111</strong></td></tr><tr><td>i = (n - 1) &amp; hash</td><td>0000 0000 0000 0000 0000 0000 0000 0001</td><td>0000 0000 0000 0000 0000 0000 0001 0001</td></tr><tr><td></td><td></td><td></td></tr></tbody></table><p>从上面的列子可以看出，在hashMap发生resize时，<strong>i = (n - 1) &amp; hash</strong>的计算，只是多了一个最高位1，对应的hash上的值，要么是0，要么是1，假设该位为0的话，那么resize完成后，i所处的位置保持不变。假设为1的话，即i的位置是oldCap（即旧的n值） + 原位置。resize后，新位置只可能出现在这两个bucket上。从而减少resize的性能损耗。</p><h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>之所以n的取值必须为2^n，是因为这能有效的降低发生哈希碰撞的概率，且减少resize的性能损耗。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;HashMap中hash算法（扰动函数）详解&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="数据结构" scheme="http://yoursite.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+    
+      <category term="数据结构" scheme="http://yoursite.com/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
   
   <entry>
     <title>红黑树</title>
@@ -194,28 +216,6 @@
   </entry>
   
   <entry>
-    <title>TCP报文格式</title>
-    <link href="http://yoursite.com/2021/02/17/TCP%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F/"/>
-    <id>http://yoursite.com/2021/02/17/TCP报文格式/</id>
-    <published>2021-02-17T15:59:36.000Z</published>
-    <updated>2021-02-16T19:04:49.842Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>TCP报文格式</p><a id="more"></a><h2 id="IP数据报"><a href="#IP数据报" class="headerlink" title="IP数据报"></a>IP数据报</h2><p>TCP/IP协议定义了一个在因特网上传输的包，称为IP数据报，由首部和数据两部分组成。IP报头中包含大量的信息，如源IP地址丶目的IP地址丶IP版本号丶数据报长度等。数据部分保存着传输层的数据丶如TCP丶UDP丶ICMP等数据</p><p>组成如下：<br><img src="https://img-blog.csdnimg.cn/20210216002105666.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="IP数据报"></p><h2 id="TCP报文格式"><a href="#TCP报文格式" class="headerlink" title="TCP报文格式"></a>TCP报文格式</h2><p>其依然由首部和数据部分组成<br><img src="https://img-blog.csdnimg.cn/20210216002432349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="TCP报文"></p><table><thead><tr><th>字段</th><th>长度(bit)</th><th>含义</th></tr></thead><tbody><tr><td>源端口</td><td>16</td><td>标识哪个应用程序发送。</td></tr><tr><td>目的端口</td><td>16</td><td>标识哪个应用程序接收。</td></tr><tr><td>序号</td><td>32</td><td>TCP链接中传输的数据流中每个字节都编上一个序号。序号字段的值指的是本报文段所发送的数据的第一个字节的序号。</td></tr><tr><td>确认号</td><td>32</td><td>是期望收到对方的下一个报文段的数据的第1个字节的序号，即上次已成功接收到的数据字节序号加1。只有ACK标识为1，此字段有效。</td></tr><tr><td>数据偏移</td><td>4</td><td>即首部长度，指出TCP报文段的数据起始处距离TCP报文段的起始处有多远，以32比特（4字节）为计算单位。最多有60字节的首部，若无选项字段，正常为20字节。</td></tr><tr><td>保留</td><td>6</td><td>暂时可忽略，值必须填0。</td></tr><tr><td>URG</td><td>1</td><td>紧急指针有效标识。它告诉系统此报文段中有紧急数据，应尽快传送（相当于高优先级的数据）。</td></tr><tr><td>ACK</td><td>1</td><td>确认号有效标识。只有当ACK=1时确认号字段才有效。当ACK=0时，确认号无效。</td></tr><tr><td>PSH</td><td>1</td><td>标识接收方应该尽快将这个报文段交给应用层。接收到PSH = 1的TCP报文段，应尽快的交付接收应用进程，而不再等待整个缓存都填满了后再向上交付。</td></tr><tr><td>PST</td><td>1</td><td>重建连接标识。当RST=1时，表明TCP连接中出现严重错误（如由于主机崩溃或其他原因），必须释放连接，然后再重新建立连接。</td></tr><tr><td>SYN</td><td>1</td><td>同步序号标识，用来发起一个连接。SYN=1表示这是一个连接请求或连接接受请求。</td></tr><tr><td>FIN</td><td>1</td><td>发端完成发送任务标识。用来释放一个连接。FIN=1表明此报文段的发送端的数据已经发送完毕，并要求释放连接。</td></tr><tr><td>窗口</td><td>16</td><td>TCP的流量控制，窗口起始于确认序号字段指明的值，这个值是接收端正期望接收的字节数。窗口最大为65535字节。</td></tr><tr><td>校验和</td><td>16</td><td>包括TCP首部和TCP数据，是一个强制性的字段，一定是由发端计算和存储，并由收端进行验证。在计算检验和时，要在TCP报文段的前面加上12字节的伪首部。</td></tr><tr><td>紧急指针</td><td>16</td><td>只有当URG标志置1时紧急指针才有效。TCP的紧急方式是发送端向另一端发送紧急数据的一种方式。紧急指针指出在本报文段中紧急数据共有多少个字节（紧急数据放在本报文段数据的最前面）。</td></tr><tr><td>选项</td><td>可变</td><td>又称为MSS。每个连接方通常都在通信的第一个报文段（为建立连接而设置SYN标志为1的那个段）中指明这个选项，它表示本端所能接受的最大报文段的长度。</td></tr><tr><td>填充</td><td>可变</td><td>选项长度不一定是32位的整数倍，所以要加填充位，即在这个字段中加入额外的零，以保证TCP头是32的整数倍。</td></tr><tr><td>数据部分</td><td>可变</td><td>该TCP协议包负载的数据</td></tr></tbody></table>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;TCP报文格式&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="网络编程" scheme="http://yoursite.com/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
-    
-    
-      <category term="网络编程" scheme="http://yoursite.com/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
     <title>TCP 三次握手 四次挥手</title>
     <link href="http://yoursite.com/2021/02/17/TCP%20%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%20%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/"/>
     <id>http://yoursite.com/2021/02/17/TCP 三次握手 四次挥手/</id>
@@ -227,6 +227,28 @@
     <summary type="html">
     
       &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;TCP 三次握手 四次挥手&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="网络编程" scheme="http://yoursite.com/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+    
+    
+      <category term="网络编程" scheme="http://yoursite.com/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TCP报文格式</title>
+    <link href="http://yoursite.com/2021/02/17/TCP%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F/"/>
+    <id>http://yoursite.com/2021/02/17/TCP报文格式/</id>
+    <published>2021-02-17T15:59:36.000Z</published>
+    <updated>2021-02-16T19:04:49.842Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>TCP报文格式</p><a id="more"></a><h2 id="IP数据报"><a href="#IP数据报" class="headerlink" title="IP数据报"></a>IP数据报</h2><p>TCP/IP协议定义了一个在因特网上传输的包，称为IP数据报，由首部和数据两部分组成。IP报头中包含大量的信息，如源IP地址丶目的IP地址丶IP版本号丶数据报长度等。数据部分保存着传输层的数据丶如TCP丶UDP丶ICMP等数据</p><p>组成如下：<br><img src="https://img-blog.csdnimg.cn/20210216002105666.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="IP数据报"></p><h2 id="TCP报文格式"><a href="#TCP报文格式" class="headerlink" title="TCP报文格式"></a>TCP报文格式</h2><p>其依然由首部和数据部分组成<br><img src="https://img-blog.csdnimg.cn/20210216002432349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2FteWFja2Vy,size_16,color_FFFFFF,t_70#pic_center" alt="TCP报文"></p><table><thead><tr><th>字段</th><th>长度(bit)</th><th>含义</th></tr></thead><tbody><tr><td>源端口</td><td>16</td><td>标识哪个应用程序发送。</td></tr><tr><td>目的端口</td><td>16</td><td>标识哪个应用程序接收。</td></tr><tr><td>序号</td><td>32</td><td>TCP链接中传输的数据流中每个字节都编上一个序号。序号字段的值指的是本报文段所发送的数据的第一个字节的序号。</td></tr><tr><td>确认号</td><td>32</td><td>是期望收到对方的下一个报文段的数据的第1个字节的序号，即上次已成功接收到的数据字节序号加1。只有ACK标识为1，此字段有效。</td></tr><tr><td>数据偏移</td><td>4</td><td>即首部长度，指出TCP报文段的数据起始处距离TCP报文段的起始处有多远，以32比特（4字节）为计算单位。最多有60字节的首部，若无选项字段，正常为20字节。</td></tr><tr><td>保留</td><td>6</td><td>暂时可忽略，值必须填0。</td></tr><tr><td>URG</td><td>1</td><td>紧急指针有效标识。它告诉系统此报文段中有紧急数据，应尽快传送（相当于高优先级的数据）。</td></tr><tr><td>ACK</td><td>1</td><td>确认号有效标识。只有当ACK=1时确认号字段才有效。当ACK=0时，确认号无效。</td></tr><tr><td>PSH</td><td>1</td><td>标识接收方应该尽快将这个报文段交给应用层。接收到PSH = 1的TCP报文段，应尽快的交付接收应用进程，而不再等待整个缓存都填满了后再向上交付。</td></tr><tr><td>PST</td><td>1</td><td>重建连接标识。当RST=1时，表明TCP连接中出现严重错误（如由于主机崩溃或其他原因），必须释放连接，然后再重新建立连接。</td></tr><tr><td>SYN</td><td>1</td><td>同步序号标识，用来发起一个连接。SYN=1表示这是一个连接请求或连接接受请求。</td></tr><tr><td>FIN</td><td>1</td><td>发端完成发送任务标识。用来释放一个连接。FIN=1表明此报文段的发送端的数据已经发送完毕，并要求释放连接。</td></tr><tr><td>窗口</td><td>16</td><td>TCP的流量控制，窗口起始于确认序号字段指明的值，这个值是接收端正期望接收的字节数。窗口最大为65535字节。</td></tr><tr><td>校验和</td><td>16</td><td>包括TCP首部和TCP数据，是一个强制性的字段，一定是由发端计算和存储，并由收端进行验证。在计算检验和时，要在TCP报文段的前面加上12字节的伪首部。</td></tr><tr><td>紧急指针</td><td>16</td><td>只有当URG标志置1时紧急指针才有效。TCP的紧急方式是发送端向另一端发送紧急数据的一种方式。紧急指针指出在本报文段中紧急数据共有多少个字节（紧急数据放在本报文段数据的最前面）。</td></tr><tr><td>选项</td><td>可变</td><td>又称为MSS。每个连接方通常都在通信的第一个报文段（为建立连接而设置SYN标志为1的那个段）中指明这个选项，它表示本端所能接受的最大报文段的长度。</td></tr><tr><td>填充</td><td>可变</td><td>选项长度不一定是32位的整数倍，所以要加填充位，即在这个字段中加入额外的零，以保证TCP头是32的整数倍。</td></tr><tr><td>数据部分</td><td>可变</td><td>该TCP协议包负载的数据</td></tr></tbody></table>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;TCP报文格式&lt;/p&gt;
     
     </summary>
     
